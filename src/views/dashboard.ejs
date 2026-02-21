@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/auth/google">Connecter Google Drive</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Dashboard</h1>
+    <p>Bonjour <%= user.username %> !</p>
+    <p>Boîtes mail configurées : <%= mailboxes.length %></p>
+    <p>Emails non lus : <%= unreadCount %></p>
+    <a href="/emails/sync" class="button">Synchroniser les emails</a>
+  </div>
+</body>
+</html>

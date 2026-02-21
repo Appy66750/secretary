@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter boîte mail - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Ajouter une boîte mail</h1>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+    <form action="/mailboxes/add" method="POST">
+      <input type="text" name="name" placeholder="Nom d'affichage" required>
+      <input type="text" name="imap_host" placeholder="Serveur IMAP" required>
+      <input type="number" name="imap_port" placeholder="Port IMAP" required>
+      <label><input type="checkbox" name="imap_secure"> SSL/TLS</label>
+      <input type="text" name="smtp_host" placeholder="Serveur SMTP" required>
+      <input type="number" name="smtp_port" placeholder="Port SMTP" required>
+      <input type="text" name="username" placeholder="Identifiant" required>
+      <input type="password" name="password" placeholder="Mot de passe" required>
+      <button type="submit">Ajouter</button>
+    </form>
+    <button onclick="testConnection()">Tester connexion</button>
+    <p id="test-result"></p>
+  </div>
+  <script>
+    async function testConnection() {
+      const formData = new FormData(document.querySelector('form'));
+      const data = Object.fromEntries(formData);
+      const response = await fetch('/mailboxes/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      document.getElementById('test-result').textContent = result.success ? 'Connexion réussie' : 'Erreur: ' + result.error;
+    }
+  </script>
+</body>
+</html>

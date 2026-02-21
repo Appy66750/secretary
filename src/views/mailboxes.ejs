@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Boîtes mail - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Boîtes mail</h1>
+    <a href="/mailboxes/add" class="button">Ajouter une boîte mail</a>
+    <ul>
+      <% mailboxes.forEach(mailbox => { %>
+        <li><%= mailbox.name %> - <%= mailbox.username %></li>
+      <% }); %>
+    </ul>
+  </div>
+</body>
+</html>

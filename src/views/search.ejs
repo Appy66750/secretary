@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Recherche - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Recherche intelligente</h1>
+    <form action="/search" method="POST">
+      <input type="text" name="query" placeholder="Rechercher un email..." required>
+      <button type="submit">Rechercher</button>
+    </form>
+    <% if (results) { %>
+      <h2>Résultats pour "<%= query %>"</h2>
+      <ul>
+        <% results.forEach(email => { %>
+          <li>
+            <strong><%= email.subject %></strong> de <%= email.sender %>
+            <p><%= email.body.substring(0, 200) %>...</p>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+</body>
+</html>

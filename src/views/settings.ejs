@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paramètres - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Paramètres</h1>
+    <form action="/dashboard/settings" method="POST">
+      <label>Forme de politesse :</label>
+      <select name="formality">
+        <option value="vouvoiement" <%= profile.formality === 'vouvoiement' ? 'selected' : '' %>>Vouvoiement</option>
+        <option value="tutoiement" <%= profile.formality === 'tutoiement' ? 'selected' : '' %>>Tutoiement</option>
+      </select>
+      <label>Styles relationnels :</label>
+      <div>
+        <input type="checkbox" name="styles" value="Promoteur" <%= profile.styles && profile.styles.includes('Promoteur') ? 'checked' : '' %>> Promoteur
+        <input type="checkbox" name="styles" value="Empathique" <%= profile.styles && profile.styles.includes('Empathique') ? 'checked' : '' %>> Empathique
+        <input type="checkbox" name="styles" value="Travaillomane" <%= profile.styles && profile.styles.includes('Travaillomane') ? 'checked' : '' %>> Travaillomane
+        <input type="checkbox" name="styles" value="Persévérant" <%= profile.styles && profile.styles.includes('Persévérant') ? 'checked' : '' %>> Persévérant
+        <input type="checkbox" name="styles" value="Rebelle" <%= profile.styles && profile.styles.includes('Rebelle') ? 'checked' : '' %>> Rebelle
+        <input type="checkbox" name="styles" value="Rêveur" <%= profile.styles && profile.styles.includes('Rêveur') ? 'checked' : '' %>> Rêveur
+      </div>
+      <button type="submit">Sauvegarder</button>
+    </form>
+  </div>
+</body>
+</html>

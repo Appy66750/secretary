@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Emails - Secrétaire IA</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/mailboxes">Boîtes mail</a>
+    <a href="/emails">Emails</a>
+    <a href="/search">Recherche</a>
+    <a href="/dashboard/settings">Paramètres</a>
+    <a href="/logout">Déconnexion</a>
+  </nav>
+  <div class="container">
+    <h1>Emails</h1>
+    <form action="/emails/sync" method="POST">
+      <button type="submit">Synchroniser</button>
+    </form>
+    <select onchange="filterByMailbox(this.value)">
+      <option value="">Toutes les boîtes</option>
+      <% mailboxes.forEach(mailbox => { %>
+        <option value="<%= mailbox.id %>" <%= selectedMailbox == mailbox.id ? 'selected' : '' %>><%= mailbox.name %></option>
+      <% }); %>
+    </select>
+    <ul>
+      <% emails.forEach(email => { %>
+        <li>
+          <strong><%= email.subject %></strong> de <%= email.sender %> (<%= email.mailbox_name %>)
+          <% if (!email.is_responded) { %>
+            <button onclick="generateResponse(<%= email.id %>)">Générer réponse</button>
+          <% } %>
+          <div id="response-<%= email.id %>"></div>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+  <script>
+    function filterByMailbox(id) {
+      window.location.href = '/emails?mailbox=' + id;
+    }
+    async function generateResponse(emailId) {
+      const response = await fetch('/emails/generate/' + emailId, { method: 'POST' });
+      const data = await response.json();
+      document.getElementById('response-' + emailId).innerHTML = `
+        <textarea id="response-text-${emailId}">${data.response}</textarea>
+        <button onclick="sendResponse(${emailId})">Envoyer</button>
+      `;
+    }
+    async function sendResponse(emailId) {
+      const responseText = document.getElementById('response-text-' + emailId).value;
+      await fetch('/emails/send/' + emailId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ response: responseText })
+      });
+      location.reload();
+    }
+  </script>
+</body>
+</html>
