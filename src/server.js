@@ -47,6 +47,14 @@ app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} déjà utilisé — arrêtez l'autre processus ou changez la variable PORT.`);
+    process.exit(1);
+  }
+  throw err;
 });
