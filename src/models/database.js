@@ -12,11 +12,36 @@ function initDB() {
       username TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      validation_token TEXT,
+      reset_token TEXT,
+      reset_expiry DATETIME,
       status TEXT DEFAULT 'pending', -- pending, active, inactive
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       validated_at DATETIME,
       profile TEXT -- JSON pour styles relationnels
     )`);
+
+    // Ajouter les colonnes manquantes (migration)
+    db.run(`PRAGMA table_info(users)`, (err, rows) => {
+      if (!err && rows) {
+        const columns = rows.map(row => row.name);
+        if (!columns.includes('validation_token')) {
+          db.run(`ALTER TABLE users ADD COLUMN validation_token TEXT`, (err) => {
+            if (!err) console.log('Colonne validation_token ajoutée');
+          });
+        }
+        if (!columns.includes('reset_token')) {
+          db.run(`ALTER TABLE users ADD COLUMN reset_token TEXT`, (err) => {
+            if (!err) console.log('Colonne reset_token ajoutée');
+          });
+        }
+        if (!columns.includes('reset_expiry')) {
+          db.run(`ALTER TABLE users ADD COLUMN reset_expiry DATETIME`, (err) => {
+            if (!err) console.log('Colonne reset_expiry ajoutée');
+          });
+        }
+      }
+    });
 
     // Table boîtes mail
     db.run(`CREATE TABLE IF NOT EXISTS mailboxes (

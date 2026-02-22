@@ -2,14 +2,32 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Inscription réussie - Secrétaire IA</title>
+  <title>Inscription en attente - Secrétaire IA</title>
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    .button-home {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .button-home:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>Inscription réussie</h1>
-    <p>Votre compte a été créé et est en attente de validation. Vous recevrez un email une fois validé.</p>
-    <a href="/login">Retour à la connexion</a>
+    <h1>Inscription réussie ✓</h1>
+    <p>Merci de vous être inscrit!</p>
+    <p><strong>Votre inscription est en attente de validation par l'administrateur.</strong></p>
+    <p>Vous recevrez un email de confirmation une fois que votre compte aura été approuvé.</p>
+    <p>Veuillez vérifier votre dossier spam/courrier indésirable.</p>
+    <a href="/login" class="button-home">Retour à la connexion</a>
   </div>
 </body>
 </html>

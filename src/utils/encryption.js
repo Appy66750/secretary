@@ -1,11 +1,23 @@
 const crypto = require('crypto');
 
 const algorithm = 'aes-256-gcm';
-const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); // 32 bytes
+
+// Attendre que ENCRYPTION_KEY soit disponible
+let key = null;
+
+function getKey() {
+  if (!key) {
+    if (!process.env.ENCRYPTION_KEY) {
+      throw new Error('ENCRYPTION_KEY non défini dans .env');
+    }
+    key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
+  }
+  return key;
+}
 
 function encrypt(text) {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipherGCM(algorithm, key);
+  const cipher = crypto.createCipherGCM(algorithm, getKey());
   cipher.setIV(iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
@@ -18,7 +30,7 @@ function encrypt(text) {
 }
 
 function decrypt(encryptedData, iv, authTag) {
-  const decipher = crypto.createDecipherGCM(algorithm, key);
+  const decipher = crypto.createDecipherGCM(algorithm, getKey());
   decipher.setIV(Buffer.from(iv, 'hex'));
   decipher.setAuthTag(Buffer.from(authTag, 'hex'));
   let decrypted = decipher.update(encryptedData, 'hex', 'utf8');

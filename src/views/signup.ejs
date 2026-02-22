@@ -4,20 +4,54 @@
   <meta charset="UTF-8">
   <title>Inscription - Secrétaire IA</title>
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    .password-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-container input {
+      width: 100%;
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 16px;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Inscription</h1>
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <p class="error"><%- error %></p>
     <% } %>
     <form action="/signup" method="POST">
       <input type="text" name="username" placeholder="Nom d'utilisateur" required>
       <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="password" placeholder="Mot de passe" required>
+      <div class="password-container">
+        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
+        <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+      </div>
       <button type="submit">S'inscrire</button>
     </form>
     <p>Déjà un compte ? <a href="/login">Se connecter</a></p>
   </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+  </script>
 </body>
 </html>
