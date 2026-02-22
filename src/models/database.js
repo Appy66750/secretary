@@ -99,6 +99,18 @@ function initDB() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )`);
+
+    // Table tokens Gmail (OAuth) pour relier un compte Gmail sans IMAP
+    db.run(`CREATE TABLE IF NOT EXISTS gmail_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      email_address TEXT,
+      access_token TEXT,
+      refresh_token TEXT,
+      expiry_date DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )`);
   });
 }
 

@@ -8,8 +8,7 @@ const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
 const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-function getAuthUrl() {
-  const scopes = ['https://www.googleapis.com/auth/drive.file'];
+function getAuthUrl(scopes = ['https://www.googleapis.com/auth/drive.file']) {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
@@ -89,6 +88,8 @@ async function createSubFolder(name, parentId) {
 }
 
 module.exports = {
+  google,
+  oauth2Client,
   getAuthUrl,
   getTokens,
   setCredentials,
@@ -97,3 +98,5 @@ module.exports = {
   findOrCreateRootFolder,
   createSubFolder,
 };
+
+
