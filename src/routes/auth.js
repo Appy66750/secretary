@@ -5,40 +5,40 @@ const crypto = require('crypto');
 const { db } = require('../models/database');
 const router = express.Router();
 
-// Configuration email de validation - version simple
+// Configuration email de validation - utiliser variables d'environnement
 let transporter = null;
 
-// Initialiser le transporter avec test account par défaut
-nodemailer.createTestAccount().then(testAccount => {
+// Initialiser le transporter avec la configuration SMTP réelle
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
   transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_PORT === '465',
     auth: {
-      user: testAccount.user,
-      pass: testAccount.pass
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
     }
   });
-  console.log('📧 Transporter configuré avec Ethereal Email (test)');
-}).catch(err => {
-  console.error('Erreur création test account:', err);
-});
+  console.log(`📧 Transporter configuré avec ${process.env.SMTP_HOST}`);
+} else {
+  console.warn('⚠️  Variables SMTP non configurées dans .env');
+}
 
 // Fonction pour envoyer les emails
 function sendEmail(to, subject, html) {
   if (!transporter) {
-    console.error('Transporter non encore initialisé');
+    console.error('❌ Transporter non initialisé');
     return Promise.reject(new Error('Transporter non initialisé'));
   }
 
   return transporter.sendMail({
-    from: 'secreataire@example.com',
+    from: process.env.SMTP_USER || 'secretary@example.com',
     to,
     subject,
     html,
   }).then(info => {
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    console.log('📧 Email envoyé - Voir le preview:', previewUrl);
+    console.log('✅ Email envoyé à:', to);
+    console.log('Message ID:', info.messageId);
     return info;
   }).catch(err => {
     console.error('❌ Erreur envoi email:', err.message);

@@ -99,33 +99,47 @@ router.post('/generate/:id', async (req, res) => {
 
 // Envoyer réponse
 router.post('/send/:id', async (req, res) => {
-  const emailId = req.params.id;
-  const { response } = req.body;
-  const userId = req.session.userId;
+  try {
+    const emailId = req.params.id;
+    const { response } = req.body;
+    const userId = req.session.userId;
 
-  db.get('SELECT e.*, m.* FROM emails e JOIN mailboxes m ON e.mailbox_id = m.id WHERE e.id = ? AND m.user_id = ?', [emailId, userId], async (err, email) => {
-    if (!email) return res.status(404).send('Email non trouvé');
+    db.get('SELECT e.*, m.* FROM emails e JOIN mailboxes m ON e.mailbox_id = m.id WHERE e.id = ? AND m.user_id = ?', [emailId, userId], async (err, email) => {
+      if (err) {
+        console.error('Erreur avec la base de données:', err);
+        return res.status(500).send('Erreur base de données');
+      }
+      if (!email) return res.status(404).send('Email non trouvé');
 
-    const encrypted = JSON.parse(email.password_encrypted);
-    const password = decryptPassword(encrypted.encryptedData, encrypted.iv, encrypted.authTag);
+      const encrypted = JSON.parse(email.password_encrypted);
+      const password = decryptPassword(encrypted.encryptedData, encrypted.iv, encrypted.authTag);
 
-    const config = {
-      smtp_host: email.smtp_host,
-      smtp_port: email.smtp_port,
-      username: email.username,
-      password: password,
-    };
+      const config = {
+        smtp_host: email.smtp_host,
+        smtp_port: email.smtp_port,
+        username: email.username,
+        password: password,
+      };
 
-    await sendEmail(config, email.sender, `Re: ${email.subject}`, response);
+      const sendResult = await sendEmail(config, email.sender, `Re: ${email.subject}`, response);
+      
+      if (!sendResult.success) {
+        console.error('Erreur lors de l\'envoi:', sendResult.error);
+        return res.status(500).send(`Erreur lors de l'envoi: ${sendResult.error}`);
+      }
 
-    db.run('UPDATE emails SET is_responded = 1 WHERE id = ?', [emailId]);
-    db.run('INSERT INTO responses (email_id, final_response, sent_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [emailId, response]);
+      db.run('UPDATE emails SET is_responded = 1 WHERE id = ?', [emailId]);
+      db.run('INSERT INTO responses (email_id, final_response, sent_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [emailId, response]);
 
-    // Archiver sur Drive
-    await archiveToDrive(email, response, userId);
+      // Archiver sur Drive
+      await archiveToDrive(email, response, userId);
 
-    res.redirect('/emails');
-  });
+      res.redirect('/emails');
+    });
+  } catch (error) {
+    console.error('Erreur lors du traitement:', error);
+    res.status(500).send('Erreur lors du traitement');
+  }
 });
 
 async function archiveToDrive(email, response, userId) {

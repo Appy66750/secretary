@@ -61,24 +61,30 @@ async function fetchEmails(config, lastFetch = null) {
 }
 
 async function sendEmail(config, to, subject, body) {
-  const transporter = nodemailer.createTransporter({
-    host: config.smtp_host,
-    port: config.smtp_port,
-    secure: config.smtp_port === 465,
-    auth: {
-      user: config.username,
-      pass: config.password,
-    },
-  });
+  try {
+    const transporter = nodemailer.createTransport({
+      host: config.smtp_host,
+      port: config.smtp_port,
+      secure: config.smtp_port === 465,
+      auth: {
+        user: config.username,
+        pass: config.password,
+      },
+    });
 
-  const mailOptions = {
-    from: config.username,
-    to: to,
-    subject: subject,
-    text: body,
-  };
+    const mailOptions = {
+      from: config.username,
+      to: to,
+      subject: subject,
+      text: body,
+    };
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 function decryptPassword(encryptedData, iv, authTag) {
